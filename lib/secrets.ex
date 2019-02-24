@@ -46,7 +46,7 @@ defmodule TwoFactorInACan.Secrets do
       :binary -> secret
       :base32 -> Base.encode32(secret)
       :base64 -> Base.encode64(secret)
-      _ -> raise """
+      _ -> raise ArgumentError, """
         Invalid format supplied when generating secret: #{format}
 
         Valid options include:

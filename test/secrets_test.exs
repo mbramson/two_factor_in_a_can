@@ -24,5 +24,11 @@ defmodule TwoFactorInACan.SecretsTest do
         assert secret =~ ~r/[A-z\d+\/]{27}=/
       end
     end
+
+    test "raises an ArgumentError for invalid format" do
+      assert_raise ArgumentError, fn ->
+        Secrets.generate_totp_secret(format: :invalid_format)
+      end
+    end
   end
 end
