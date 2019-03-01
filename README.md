@@ -1,11 +1,57 @@
 # TwoFactorInACan
 
-**TODO: Add description**
+`TwoFactorInACan` is a library for adding two factor authentication (2FA) to
+your application. Its goal is to be the most developer friendly way to securely
+setup two factor authentication in the Elixir/Erlang ecosystem. That means that
+not only is it thoroughly documented and easy to add to your project, but it's
+also the easiest to understand should you need to take a look behind the
+curtain.
+
+Documentation is not yet up at hexdocs, because it has not been released.
+
+## Roadmap
+
+This project is still very, very, very much under construction.
+
+That said, here's what's planned:
+- [ ] HMAC based One Time Password 2FA (HOTP)
+  - [x] Secret Generation
+  - [x] `Hotp.generate_token/3` function
+  - [ ] `Hotp.verify_token/3` function
+  - [ ] Document to pieces
+- [ ] Time-based One Time Password 2FA (TOTP)
+  - [x] Secret Generation
+  - [x] `Totp.generate_token/3` function
+  - [ ] `Totp.verify_token/3` function
+  - [ ] Document to pieces
+- [ ] Universal Second Factor (U2P)
+- [ ] Add examples to `README.md`
+- [ ] Tutorial for adding to Phoenix
+
+### Maybe, but probably not
+
+2FA via text to someone's phone (SMS) is better than no 2FA at all, but there
+are security users to be aware of. The main one is that it is not impossible to
+intercept the communication of the token when sent to the user's phone number.
+Ultimately, there are no cryptographic guarantees that the device used to
+authenticate is the same device that was originally used to setup 2FA.
+
+- [ ] SMS based 2FA
+  - [ ] Thoroughly warn about not using
+    - [ ] But note why its still better than no 2FA at all
+  - [ ] Build OTP process tree for keeping state of recently sent SMS
+  - [ ] `Sms.generate_and_send_token/2` function
+  - [ ] `Sms.verify_token/3` function
+  - [ ] Document to pieces
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `two_factor_in_a_can` to your list of dependencies in `mix.exs`:
+This library is not currently available on hex.
+
+Once it is:
+
+The package can be installed by adding `two_factor_in_a_can` to your list of
+dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -14,8 +60,3 @@ def deps do
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/two_factor_in_a_can](https://hexdocs.pm/two_factor_in_a_can).
-
