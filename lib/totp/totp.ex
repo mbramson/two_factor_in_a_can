@@ -5,6 +5,8 @@ defmodule TwoFactorInACan.Totp do
   (https://www.ietf.org/rfc/rfc4226.txt).
   """
 
+  alias TwoFactorInACan.Hotp
+
   @doc """
   Outputs the current TOTP token for the given secret.
 
@@ -32,8 +34,18 @@ defmodule TwoFactorInACan.Totp do
   def current_token_value(secret, opts \\ []) do
     # TODO: Ensure different secret sizes work
     # TODO: Allow different token sizes
-    base32_secret = convert_to_base32(secret, opts)
-    :pot.totp(base32_secret)
+    time_interval = time_interval(opts)
+    Hotp.generate_token(secret, time_interval, opts)
+  end
+
+  def time_interval(opts \\ []) do
+    interval_seconds = Keyword.get(opts, :interval_seconds, 30)
+    seconds_since_epoch = Keyword.get(opts, :injected_timestamp, now())
+    seconds_since_epoch / interval_seconds |> trunc
+  end
+
+  defp now do
+    DateTime.utc_now() |> DateTime.to_unix(:second)
   end
 
   defp convert_to_base32(secret, opts) do
