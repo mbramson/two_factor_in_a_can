@@ -48,6 +48,11 @@ defmodule TwoFactorInACan.Totp do
   to calculate the current token value.
 
   The following options are supported:
+  - `:offset_seconds` (Default: 0) - The number of seconds to offset the
+    current timestamp by. If the current timestamp was 600 and the offset was
+    60, then the timestamp of 660 would be used to calculate the time interval.
+    This can be useful to account for drift or to purposefully allow the last
+    token to be valid as well in functions that use this function.
   - `:interval_seconds` (Default: 30) - The number of seconds that must pass
     before a new time_interval (and thus TOTP token) is returned by this
     function. This should probably never be anything but the default (30
@@ -63,6 +68,9 @@ defmodule TwoFactorInACan.Totp do
   iex> TwoFactorInACan.Totp.time_interval()
   51802243
 
+  iex> TwoFactorInACan.Totp.time_interval(offset_seconds: 30)
+  51802244
+
   iex> TwoFactorInACan.Totp.time_interval(interval_seconds: 60)
   25901122
 
@@ -74,9 +82,16 @@ defmodule TwoFactorInACan.Totp do
   """
   @spec time_interval([key: :atom]) :: integer()
   def time_interval(opts \\ []) do
+    offset = Keyword.get(opts, :offset_seconds, 0)
     interval_seconds = Keyword.get(opts, :interval_seconds, 30)
-    seconds_since_epoch = Keyword.get(opts, :injected_timestamp, now())
+    seconds_since_epoch = Keyword.get(opts, :injected_timestamp, now()) + offset
     seconds_since_epoch / interval_seconds |> trunc
+  end
+
+  def same_secret?(secret, token, opts \\ []) do
+    # TODO: Accept look ahead
+    # TODO: Accept look behind
+    token == current_token_value(secret, opts)
   end
 
   defp now do

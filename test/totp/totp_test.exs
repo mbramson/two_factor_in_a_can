@@ -47,6 +47,8 @@ defmodule TwoFactorInACan.TotpTest do
       end
     end
 
+    # TODO: Add test for offset
+
     property "returns a 6 digit numeric string with binary key" do
       check all _ <- boolean() do
         secret = Secrets.generate_totp_secret(format: :binary)
@@ -86,6 +88,8 @@ defmodule TwoFactorInACan.TotpTest do
       assert returned_interval > 0
     end
 
+    # TODO: Add test for offset
+
     property "always returns the same interval as the :pot erlang library" do
       check all interval_seconds <- positive_integer(),
         injected_timestamp <- integer()
@@ -97,6 +101,32 @@ defmodule TwoFactorInACan.TotpTest do
         pot_opts = [interval_length: interval_seconds, timestamp: pot_timestamp]
 
         assert Totp.time_interval(opts) == :pot.time_interval(pot_opts)
+      end
+    end
+  end
+
+  describe "same_secret?/3" do
+    # Note: This test will be flaky if current token value changes in the tiny
+    # amount of time between the two token calculations.
+    property "returns true if token is generated with the same secret" do
+      check all secret <- binary(length: 20) do
+        token = Totp.current_token_value(secret)
+        assert Totp.same_secret?(secret, token)
+      end
+    end
+
+    # Note: Flaky test. This test will fail if the token for 30 seconds ago
+    # happens to match the the current token. There is a 1/1_000_000 chance of
+    # this happening.
+    property "returns false if token is generated for 30 seconds in the past" do
+      check all secret <- binary(length: 20) do
+        thirty_seconds_ago = 
+          (DateTime.utc_now() |> DateTime.to_unix(:second)) - 30
+
+        thirty_seconds_ago_token =
+          Totp.current_token_value(secret, injected_timestamp: thirty_seconds_ago)
+
+        refute Totp.same_secret?(secret, thirty_seconds_ago_token)
       end
     end
   end
