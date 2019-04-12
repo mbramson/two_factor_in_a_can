@@ -88,7 +88,44 @@ defmodule TwoFactorInACan.TotpTest do
       assert returned_interval > 0
     end
 
-    # TODO: Add test for offset
+    property "returns a time interval offset from the current one" do
+      check all offset <- integer() do
+        offset_seconds = offset * 30
+
+        current_interval = Totp.time_interval(injected_timestamp: 10_000)
+
+        offset_interval =
+          Totp.time_interval(
+            injected_timestamp: 10_000, 
+            offset_seconds: offset_seconds
+          )
+
+        assert offset_interval == current_interval + offset
+      end
+    end
+
+    property "returns a time interval offset from current one with custom interval" do
+      check all offset <- integer(),
+        interval <- positive_integer() do
+
+        offset_seconds = offset * interval
+
+        current_interval = 
+          Totp.time_interval(
+            injected_timestamp: 10_000, 
+            interval_seconds: interval
+        )
+
+        offset_interval =
+          Totp.time_interval(
+            injected_timestamp: 10_000, 
+            interval_seconds: interval,
+            offset_seconds: offset_seconds
+          )
+
+        assert offset_interval == current_interval + offset
+      end
+    end
 
     property "always returns the same interval as the :pot erlang library" do
       check all interval_seconds <- positive_integer(),
@@ -120,7 +157,7 @@ defmodule TwoFactorInACan.TotpTest do
     # this happening.
     property "returns false if token is generated for 30 seconds in the past" do
       check all secret <- binary(length: 20) do
-        thirty_seconds_ago = 
+        thirty_seconds_ago =
           (DateTime.utc_now() |> DateTime.to_unix(:second)) - 30
 
         thirty_seconds_ago_token =
