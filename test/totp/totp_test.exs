@@ -47,8 +47,6 @@ defmodule TwoFactorInACan.TotpTest do
       end
     end
 
-    # TODO: Add test for offset
-
     property "returns a 6 digit numeric string with binary key" do
       check all _ <- boolean() do
         secret = Secrets.generate_totp_secret(format: :binary)
@@ -96,7 +94,7 @@ defmodule TwoFactorInACan.TotpTest do
 
         offset_interval =
           Totp.time_interval(
-            injected_timestamp: 10_000, 
+            injected_timestamp: 10_000,
             offset_seconds: offset_seconds
           )
 
@@ -110,15 +108,15 @@ defmodule TwoFactorInACan.TotpTest do
 
         offset_seconds = offset * interval
 
-        current_interval = 
+        current_interval =
           Totp.time_interval(
-            injected_timestamp: 10_000, 
+            injected_timestamp: 10_000,
             interval_seconds: interval
         )
 
         offset_interval =
           Totp.time_interval(
-            injected_timestamp: 10_000, 
+            injected_timestamp: 10_000,
             interval_seconds: interval,
             offset_seconds: offset_seconds
           )
@@ -166,5 +164,19 @@ defmodule TwoFactorInACan.TotpTest do
         refute Totp.same_secret?(secret, thirty_seconds_ago_token)
       end
     end
+
+    property "returns true for token that is in the acceptable future token range" do
+    end
+
+    property "returns false for token that is outside the acceptable future token range" do
+    end
+
+    property "returns true for token that is in the acceptable past token range" do
+    end
+
+    property "returns false for token that is outside the acceptable past token range" do
+    end
+
+    # Test both future and past range acceptance
   end
 end

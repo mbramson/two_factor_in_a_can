@@ -89,9 +89,33 @@ defmodule TwoFactorInACan.Totp do
   end
 
   def same_secret?(secret, token, opts \\ []) do
+    acceptable_future_tokens = Keyword.get(opts, :acceptable_future_tokens, 0)
+    acceptable_past_tokens = Keyword.get(opts, :acceptable_past_tokens, 0)
+    interval_seconds = Keyword.get(opts, :interval_seconds, 30)
     # TODO: Accept look ahead
     # TODO: Accept look behind
-    token == current_token_value(secret, opts)
+    cond do
+      token == current_token_value(secret, opts) ->
+        true
+
+      acceptable_future_tokens > 0 and acceptable_past_tokens > 0 ->
+        # TODO: IMPLEMENT
+        true
+
+      acceptable_future_tokens > 0 ->
+        Enum.any?(1..acceptable_future_tokens, fn offset ->
+          offset_seconds = offset * interval_seconds
+          opts_with_offset = Map.put(opts, :offset_seconds, offset_seconds)
+          token == current_token_value(secret, opts_with_offset)
+        end)
+
+      acceptable_past_tokens > 0 ->
+        # TODO IMPLEMENT
+        true
+
+      true -> false
+    end
+
   end
 
   defp now do
