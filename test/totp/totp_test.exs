@@ -165,16 +165,92 @@ defmodule TwoFactorInACan.TotpTest do
       end
     end
 
-    property "returns true for token that is in the acceptable future token range" do
-    end
+    property "returns true for last token using acceptable_past_tokens" do
+      check all secret <- binary(length: 20),
+        interval_seconds <- positive_integer(),
+        offset_seconds <- integer() do
 
-    property "returns false for token that is outside the acceptable future token range" do
-    end
+          one_token_ago = -1 * interval_seconds + offset_seconds
+          last_token = Totp.current_token_value(
+            secret,
+            offset_seconds: one_token_ago,
+            interval_seconds: interval_seconds
+          )
 
-    property "returns true for token that is in the acceptable past token range" do
+          assert Totp.same_secret?(
+            secret,
+            last_token,
+            acceptable_past_tokens: 1,
+            interval_seconds: interval_seconds,
+            offset_seconds: offset_seconds
+          )
+      end
     end
 
     property "returns false for token that is outside the acceptable past token range" do
+      check all secret <- binary(length: 20),
+        interval_seconds <- positive_integer(),
+        offset_seconds <- integer() do
+
+          two_tokens_ago = -2 * interval_seconds + offset_seconds
+          last_token = Totp.current_token_value(
+            secret,
+            offset_seconds: two_tokens_ago,
+            interval_seconds: interval_seconds
+          )
+
+          refute Totp.same_secret?(
+            secret,
+            last_token,
+            acceptable_past_tokens: 1,
+            interval_seconds: interval_seconds,
+            offset_seconds: offset_seconds
+          )
+      end
+    end
+
+    property "returns true for next token using acceptable_future_tokens" do
+      check all secret <- binary(length: 20),
+        interval_seconds <- positive_integer(),
+        offset_seconds <- integer() do
+
+          one_token_in_future = interval_seconds + offset_seconds
+          last_token = Totp.current_token_value(
+            secret,
+            offset_seconds: one_token_in_future,
+            interval_seconds: interval_seconds
+          )
+
+          assert Totp.same_secret?(
+            secret,
+            last_token,
+            acceptable_future_tokens: 1,
+            interval_seconds: interval_seconds,
+            offset_seconds: offset_seconds
+          )
+      end
+    end
+
+    property "returns false for token that is outside the acceptable future token range" do
+      check all secret <- binary(length: 20),
+        interval_seconds <- positive_integer(),
+        offset_seconds <- integer() do
+
+          two_tokens_in_future = 2 * interval_seconds + offset_seconds
+          last_token = Totp.current_token_value(
+            secret,
+            offset_seconds: two_tokens_in_future,
+            interval_seconds: interval_seconds
+          )
+
+          refute Totp.same_secret?(
+            secret,
+            last_token,
+            acceptable_future_tokens: 1,
+            interval_seconds: interval_seconds,
+            offset_seconds: offset_seconds
+          )
+      end
     end
 
     # Test both future and past range acceptance

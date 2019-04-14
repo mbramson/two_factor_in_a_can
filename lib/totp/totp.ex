@@ -92,30 +92,17 @@ defmodule TwoFactorInACan.Totp do
     acceptable_future_tokens = Keyword.get(opts, :acceptable_future_tokens, 0)
     acceptable_past_tokens = Keyword.get(opts, :acceptable_past_tokens, 0)
     interval_seconds = Keyword.get(opts, :interval_seconds, 30)
-    # TODO: Accept look ahead
-    # TODO: Accept look behind
-    cond do
-      token == current_token_value(secret, opts) ->
-        true
+    {offset_seconds, opts} = Keyword.pop(opts, :offset_seconds, 0)
 
-      acceptable_future_tokens > 0 and acceptable_past_tokens > 0 ->
-        # TODO: IMPLEMENT
-        true
+    time_intervals_to_check = -acceptable_past_tokens..acceptable_future_tokens
 
-      acceptable_future_tokens > 0 ->
-        Enum.any?(1..acceptable_future_tokens, fn offset ->
-          offset_seconds = offset * interval_seconds
-          opts_with_offset = Map.put(opts, :offset_seconds, offset_seconds)
-          token == current_token_value(secret, opts_with_offset)
-        end)
+    Enum.any?(time_intervals_to_check, fn offset ->
+      this_interval_offset_seconds = offset * interval_seconds + offset_seconds
+      opts_with_offset =
+        Keyword.put(opts, :offset_seconds, this_interval_offset_seconds)
 
-      acceptable_past_tokens > 0 ->
-        # TODO IMPLEMENT
-        true
-
-      true -> false
-    end
-
+      token == current_token_value(secret, opts_with_offset)
+    end)
   end
 
   defp now do
