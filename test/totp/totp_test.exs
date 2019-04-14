@@ -252,7 +252,5 @@ defmodule TwoFactorInACan.TotpTest do
           )
       end
     end
-
-    # Test both future and past range acceptance
   end
 end

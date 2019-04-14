@@ -88,6 +88,41 @@ defmodule TwoFactorInACan.Totp do
     seconds_since_epoch / interval_seconds |> trunc
   end
 
+  @doc """
+  Verifies that the provided token was generated using the provided secret.
+
+  This function uses the secret to generate a token. It then compares the
+  generated token to the supplied token. If they match, then it can be
+  probabilistically inferred that the entity that supplied the token also knew
+  the secret.
+
+  This function allows a number of options:
+  - `:acceptable_past_tokens` (Default: 0) - The number of past tokens which
+    should result in this function returning true. Setting this to `1` can be a
+    friendly way to allow users to still verify if they have taken too long to
+    submit their token. It should be noted that this does result in two tokens
+    being valid instead of one, which makes a valid token easeier to guess.
+    This value should not be set too high or security is greatly compromised.
+  - `:acceptable_future_tokens` (Default: 0) - The number of future tokens
+    which should result in this function returning true. It should be noted
+    that setting this to a nonzero value will allow more tokens to be valid and
+    thus make a valid token easier to guess. This value should not be set too
+    high or security is greatly compromised.
+  - `:offset_seconds` (Default: 0) - The number of seconds to offset the
+    current timestamp by. If the current timestamp was 600 and the offset was
+    60, then the timestamp of 660 would be used to calculate the time interval.
+    This can be useful to account for drift or difference in clock times
+    between two entities.
+  - `:interval_seconds` (Default: 30) - The number of seconds that must pass
+    before a new time_interval (and thus TOTP token) is returned by this
+    function. This should probably never be anything but the default (30
+    seconds) during actual use, as nearly all apps that generate TOTP tokens
+    assume a 30 second interval.
+  - `:injected_timestamp` (default: current time) - The unix timestamp to use
+    when calculating the time interval. This should only be used during testing
+    to ensure the same token or interval is always returned. When this option
+    is not supplied, the current timestamp is used.
+  """
   def same_secret?(secret, token, opts \\ []) do
     acceptable_future_tokens = Keyword.get(opts, :acceptable_future_tokens, 0)
     acceptable_past_tokens = Keyword.get(opts, :acceptable_past_tokens, 0)
