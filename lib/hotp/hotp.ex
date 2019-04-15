@@ -1,7 +1,7 @@
 defmodule TwoFactorInACan.Hotp do
   @moduledoc """
-  Contains functions for working with the HMAC-based One Time Password
-  algorithm as defined in RFC 4226.
+  Functions for working with the HMAC-based One Time Password algorithm as
+  defined in RFC 4226.
 
   For details on RFC 4226, see https://tools.ietf.org/rfc/rfc4226.txt.
   """
@@ -21,6 +21,25 @@ defmodule TwoFactorInACan.Hotp do
     - `:binary` (default)
     - `:base32`
     - `:base64`
+  - `:token_length` (Default: 6) - the length of the generated token. A longer
+    token is harder to guess and thus more secure. A longer token can also be
+    more difficult for users to accurately transmit. Although everything in
+    `TwoFactorInACan` supports variable token length, you should be sure that
+    other apps and programs used support the token length set here.
+
+  ## Examples
+
+  ```elixir
+  iex> secret = TwoFactorInACan.Secrets.generate_totp_secret()
+  iex> TwoFactorInACan.Hotp.generate_token(secret, 0)
+  "866564"
+
+  iex> TwoFactorInACan.Hotp.generate_token(secret, 1)
+  "532769"
+
+  iex> TwoFactorInACan.Hotp.generate_token(secret, 0, token_length: 10)
+  "1807866564"
+  ```
   """
   def generate_token(secret, count, opts \\ []) do
     token_length = Keyword.get(opts, :token_length, 6)

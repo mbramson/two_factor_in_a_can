@@ -1,8 +1,9 @@
 defmodule TwoFactorInACan.Totp do
   @moduledoc """
   Functions for working with time based one time password (TOTP) style two
-  factory authentication as defined in RFC4226
-  (https://www.ietf.org/rfc/rfc4226.txt).
+  factory authentication as defined in RFC 4226
+
+  For details on RFC 4226, see https://tools.ietf.org/rfc/rfc4226.txt.
   """
 
   alias TwoFactorInACan.Hotp
@@ -24,6 +25,7 @@ defmodule TwoFactorInACan.Totp do
 
   # Examples
 
+  ```elixir
   iex> secret = TwoFactorInACan.Secrets.generate_totp_secret()
   iex> TwoFactorInACan.Totp.current_token_value(secret)
   "858632"
@@ -35,6 +37,7 @@ defmodule TwoFactorInACan.Totp do
   iex> secret = TwoFactorInACan.Secrets.generate_totp_secret(format: :base64)
   iex> TwoFactorInACan.Totp.current_token_value(secret, secret_format: :base64)
   "384012"
+  ```
   """
   def current_token_value(secret, opts \\ []) do
     # TODO: Ensure different secret sizes work
@@ -63,8 +66,9 @@ defmodule TwoFactorInACan.Totp do
     to ensure the same token or interval is always returned. When this option
     is not supplied, the current timestamp is used.
 
-  # Examples
+  ## Examples
 
+  ```elixir
   iex> TwoFactorInACan.Totp.time_interval()
   51802243
 
@@ -79,6 +83,7 @@ defmodule TwoFactorInACan.Totp do
 
   iex> TwoFactorInACan.Totp.time_interval(injected_timestamp: 60, interval_seconds: 10)
   6
+  ```
   """
   @spec time_interval([key: :atom]) :: integer()
   def time_interval(opts \\ []) do
@@ -89,7 +94,8 @@ defmodule TwoFactorInACan.Totp do
   end
 
   @doc """
-  Verifies that the provided token was generated using the provided secret.
+  Verifies that the provided TOTP token was generated using the provided
+  secret.
 
   This function uses the secret to generate a token. It then compares the
   generated token to the supplied token. If they match, then it can be
@@ -97,23 +103,23 @@ defmodule TwoFactorInACan.Totp do
   the secret.
 
   This function allows a number of options:
-  - `:acceptable_past_tokens` (Default: 0) - The number of past tokens which
+  - `:acceptable_past_tokens` (Default: `0`) - The number of past tokens which
     should result in this function returning true. Setting this to `1` can be a
     friendly way to allow users to still verify if they have taken too long to
     submit their token. It should be noted that this does result in two tokens
     being valid instead of one, which makes a valid token easeier to guess.
     This value should not be set too high or security is greatly compromised.
-  - `:acceptable_future_tokens` (Default: 0) - The number of future tokens
+  - `:acceptable_future_tokens` (Default: `0`) - The number of future tokens
     which should result in this function returning true. It should be noted
     that setting this to a nonzero value will allow more tokens to be valid and
     thus make a valid token easier to guess. This value should not be set too
     high or security is greatly compromised.
-  - `:offset_seconds` (Default: 0) - The number of seconds to offset the
+  - `:offset_seconds` (Default: `0`) - The number of seconds to offset the
     current timestamp by. If the current timestamp was 600 and the offset was
     60, then the timestamp of 660 would be used to calculate the time interval.
     This can be useful to account for drift or difference in clock times
     between two entities.
-  - `:interval_seconds` (Default: 30) - The number of seconds that must pass
+  - `:interval_seconds` (Default: `30`) - The number of seconds that must pass
     before a new time_interval (and thus TOTP token) is returned by this
     function. This should probably never be anything but the default (30
     seconds) during actual use, as nearly all apps that generate TOTP tokens
@@ -122,6 +128,17 @@ defmodule TwoFactorInACan.Totp do
     when calculating the time interval. This should only be used during testing
     to ensure the same token or interval is always returned. When this option
     is not supplied, the current timestamp is used.
+  - `:secret_format` (default: `:binary`) - The format of the passed in secret.
+    Can be one of `:binary`, `:base32`, or `:base64`.
+
+  ## Examples
+
+  ```elixir
+  iex> secret = TwoFactorInACan.Secrets.generate_totp_secret()
+  iex> current_token = TwoFactorInACan.Totp.current_token_value(secret)
+  iex> TwoFactorInACan.Totp.same_secret?(secret, current_token)
+  true
+  ```
   """
   def same_secret?(secret, token, opts \\ []) do
     acceptable_future_tokens = Keyword.get(opts, :acceptable_future_tokens, 0)
