@@ -22,12 +22,32 @@ defmodule TwoFactorInACan.HotpTest do
       end
     end
 
+    property "raises an ArgumentError if base32 secret cannot be decoded" do
+      not_base32_secret = "not_base32"
+      expected_message_regex =
+        ~r/Secret format specified as :base32, but there was an error/
+
+      assert_raise ArgumentError, expected_message_regex, fn ->
+        Hotp.generate_token(not_base32_secret, 0, secret_format: :base32)
+      end
+    end
+
     property "returns a token with base64 secret" do
       check all secret <- binary(length: 20),
                 count <- integer() do
         base64_secret = :base64.encode(secret)
         token = Hotp.generate_token(base64_secret, count, secret_format: :base64)
         assert token =~ ~r/\d{6}/
+      end
+    end
+
+    property "raises an ArgumentError if base64 secret cannot be decoded" do
+      not_base64_secret = "not_base64"
+      expected_message_regex =
+        ~r/Secret format specified as :base64, but there was an error/
+
+      assert_raise ArgumentError, expected_message_regex, fn ->
+        Hotp.generate_token(not_base64_secret, 0, secret_format: :base64)
       end
     end
 

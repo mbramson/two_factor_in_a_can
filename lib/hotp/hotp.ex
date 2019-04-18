@@ -50,8 +50,8 @@ defmodule TwoFactorInACan.Hotp do
 
     four_bytes_from_hash = dynamically_truncate(hash)
 
-    four_bytes_as_integer = four_bytes_from_hash 
-                            |> binary_to_integer 
+    four_bytes_as_integer = four_bytes_from_hash
+                            |> binary_to_integer
                             |> wrap_to(0x7FFFFFFF)
 
     truncation_factor = 10 |> :math.pow(token_length) |> trunc
@@ -65,22 +65,42 @@ defmodule TwoFactorInACan.Hotp do
 
   defp convert_to_binary(secret, opts \\ []) do
     secret_format = Keyword.get(opts, :secret_format, :binary)
-    
+
     case secret_format do
       :binary ->
         secret
 
       :base32 ->
-        secret
-        |> :base32.decode()
+        case Base.decode32(secret) do
+          {:ok, binary_secret} ->
+            binary_secret
+
+          _ ->
+            raise ArgumentError, """
+            Error calculating token value.
+
+            Secret format specified as :base32, but there was an error
+            decoding the secret that was passed in with Base.decode32/1.
+            """
+        end
 
       :base64 ->
-        secret
-        |> :base64.decode()
+        case Base.decode64(secret) do
+          {:ok, binary_secret} ->
+            binary_secret
+
+          _ ->
+            raise ArgumentError, """
+            Error calculating token value.
+
+            Secret format specified as :base64, but there was an error
+            decoding the secret that was passed in with Base.decode64/1.
+            """
+        end
 
       _ ->
         raise ArgumentError, """
-        Invalid secret format supplied when decoding secret: 
+        Invalid secret format supplied when decoding secret:
         secret_format: #{secret_format}
 
         Valid options include:
@@ -99,7 +119,7 @@ defmodule TwoFactorInACan.Hotp do
     # Convert final byte of binary to a number between 0 and 15.
     # This will be uniformly randomly between 0 and 15.
     offset = :binary.at(binary, 19) &&& 15
-    
+
     # Use that offset to randomly select 4 contiguous bytes from the original
     # binary.
     :binary.part(binary, offset, 4)
