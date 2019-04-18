@@ -63,7 +63,7 @@ defmodule TwoFactorInACan.Hotp do
     |> String.pad_leading(token_length, "0")
   end
 
-  defp convert_to_binary(secret, opts \\ []) do
+  defp convert_to_binary(secret, opts) do
     secret_format = Keyword.get(opts, :secret_format, :binary)
 
     case secret_format do
