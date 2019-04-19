@@ -1,7 +1,7 @@
 defmodule TwoFactorInACan.Hotp do
   @moduledoc """
-  Functions for working with the HMAC-based One Time Password algorithm as
-  defined in RFC 4226.
+  Provides functions for working with the HMAC-based One Time Password
+  algorithm as defined in RFC 4226.
 
   For details on RFC 4226, see https://tools.ietf.org/rfc/rfc4226.txt.
   """

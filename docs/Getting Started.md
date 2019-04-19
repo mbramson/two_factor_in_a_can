@@ -25,3 +25,13 @@ def deps do
   ]
 end
 ```
+
+## Usage
+
+### Time-Based One Time Password (TOTP)
+
+See `TwoFactorInACan.Totp` for usage details.
+
+### HMAC-Based One Time Password (HOTP)
+
+See `TwoFactorInACan.Hotp` for usage details.

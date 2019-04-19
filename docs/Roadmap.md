@@ -13,6 +13,9 @@ That said, here's what's planned:
   - [x] `Totp.current_token_value/2` function
   - [x] `Totp.same_secret?/3` function
   - [x] Write documentation
+- [ ] Easy TOTP QR Code generation
+  - [ ] with nonce
+  - [ ] with sha256
 - [ ] Universal Second Factor (U2P)
 - [ ] Add examples to `README.md`
 - [ ] Tutorial for adding to Phoenix
