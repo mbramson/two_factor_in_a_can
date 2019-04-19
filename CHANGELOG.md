@@ -1,3 +1,9 @@
+# 0.1.2
+
+- Add the `TwoFactorInACan.Hotp.same_secret?/4` function for verifying HOTP
+  tokens.
+- Drastically improve the documentation in the `TwoFactorInACan.Totp` module.
+
 # 0.1.1
 
 - Fixed issues with projects that did not also have :pot as a dependency. All
