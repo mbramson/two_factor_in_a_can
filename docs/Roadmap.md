@@ -6,7 +6,7 @@ That said, here's what's planned:
 - [ ] HMAC based One Time Password 2FA (HOTP)
   - [x] Secret Generation
   - [x] `Hotp.generate_token/3` function
-  - [ ] `Hotp.verify_token/3` function
+  - [x] `Hotp.same_secret?/3` function
   - [ ] Write documentation
 - [x] Time-based One Time Password 2FA (TOTP)
   - [x] Secret Generation

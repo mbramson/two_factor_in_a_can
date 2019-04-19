@@ -63,6 +63,31 @@ defmodule TwoFactorInACan.Hotp do
     |> String.pad_leading(token_length, "0")
   end
 
+  @doc """
+  Verifies that the provided HOTP token was generated using the provided secret
+  and count.
+
+  This function uses the secret and count to generate a token. It then compares
+  that generated token to the passed in token. If they match, then this
+  function returns true. If they do not match, then this function returns
+  false.
+
+  This function allows a number of options:
+  - `:secret_format` - the format that the secret is passed in as. Options
+    include:
+    - `:binary` (default)
+    - `:base32`
+    - `:base64`
+  - `:token_length` (Default: 6) - the length of the generated token. A longer
+    token is harder to guess and thus more secure. A longer token can also be
+    more difficult for users to accurately transmit. Although everything in
+    `TwoFactorInACan` supports variable token length, you should be sure that
+    other apps and programs used support the token length set here.
+  """
+  def same_secret?(secret, token, count, opts \\ []) do
+    token == generate_token(secret, count, opts)
+  end
+
   defp convert_to_binary(secret, opts) do
     secret_format = Keyword.get(opts, :secret_format, :binary)
 

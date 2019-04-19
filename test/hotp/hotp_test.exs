@@ -72,4 +72,34 @@ defmodule TwoFactorInACan.HotpTest do
       end
     end
   end
+
+  describe "same_secret/4" do
+    property "returns true for token and count generated with the same secret and count" do
+      check all secret <- binary(length: 20),
+                count <- integer() do
+
+        token = Hotp.generate_token(secret, count)
+        assert Hotp.same_secret?(secret, token, count)
+      end
+    end
+
+    property "returns true for token and count generated with the same secret, count, and token length" do
+      check all secret <- binary(length: 20),
+                count <- integer(),
+                token_length <- integer(1..100) do
+
+        token = Hotp.generate_token(secret, count, token_length: token_length)
+        assert Hotp.same_secret?(secret, token, count, token_length: token_length)
+      end
+    end
+
+    property "returns false for when tokens do not match" do
+      check all secret <- binary(length: 20),
+                count <- integer(),
+                token_length <- integer(1..100) do
+
+        refute Hotp.same_secret?(secret, -1, count, token_length: token_length)
+      end
+    end
+  end
 end
