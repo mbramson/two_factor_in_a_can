@@ -14,11 +14,15 @@ defmodule TwoFactorInACan.Secrets do
   Generates a 160-bit key which is the size recommended by RFC4226
   (https://www.ietf.org/rfc/rfc4226.txt).
 
-  By default, outputs a raw binary key with no encoding. The `:format` key can
-  be used to specify alternate output formats. Valid formats include:
-  - `:binary` (default)
-  - `:base32`
-  - `:base64`
+  The following options are supported:
+  - `:format` (Default: `:binary`) - The format of the generated secret.
+    Options include:
+    - `:binary` (default)
+    - `:base32`
+    - `:base64`
+  - `:bytes` (Default: `20`) - The size in bytes of the generated secret. 20
+    bytes (160 bits) is the size specified by RFC 4226. It is also the size
+    supported by most authenticator applications.
 
   # Examples
 
@@ -33,7 +37,9 @@ defmodule TwoFactorInACan.Secrets do
   """
   @spec generate_totp_secret(secret_generation_opts) :: binary()
   def generate_totp_secret(opts \\ []) do
-    @default_totp_secret_byte_size
+    bytes = Keyword.get(opts, :bytes, @default_totp_secret_byte_size)
+
+    bytes
     |> :crypto.strong_rand_bytes()
     |> format_secret(opts)
   end

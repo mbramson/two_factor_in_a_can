@@ -25,6 +25,13 @@ defmodule TwoFactorInACan.SecretsTest do
       end
     end
 
+    property "returns a key of length specified by the bytes option" do
+      check all secret_bytes <- integer(1..1024) do
+        secret = Secrets.generate_totp_secret(format: :binary, bytes: secret_bytes)
+        assert byte_size(secret) == secret_bytes
+      end
+    end
+
     test "raises an ArgumentError for invalid format" do
       assert_raise ArgumentError, fn ->
         Secrets.generate_totp_secret(format: :invalid_format)
