@@ -79,9 +79,9 @@ defmodule TwoFactorInACan.Totp do
   |> MyQRModule.encode # Note: Not a real module!
   ```
 
-  In the above URL, MySecret should be the secret, MyAppName and MyDescription
-  can be anything, and assist the user in figuring out which token to use on
-  your site if they have many.
+  In the above URL, MySecret should be the secret encoded in base32, MyAppName
+  and MyDescription can be anything, and assist the user in figuring out which
+  token to use on your site if they have many.
 
   ### Verify User Received Secret
 
