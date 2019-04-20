@@ -48,25 +48,24 @@ defmodule TwoFactorInACan.TotpTest do
     end
 
     property "returns a 6 digit numeric string with binary key" do
-      check all _ <- boolean() do
-        secret = Secrets.generate_totp_secret(format: :binary)
+      check all secret <- binary(length: 20) do
         token = Totp.current_token_value(secret, secret_format: :binary)
         assert token =~ ~r/\A\d{6}\z/
       end
     end
 
     property "returns a 6 digit numeric string with base32 key" do
-      check all _ <- boolean() do
-        secret = Secrets.generate_totp_secret(format: :base32)
-        token = Totp.current_token_value(secret, secret_format: :base32)
+      check all secret <- binary(length: 20) do
+        base32_secret = Base.encode32(secret)
+        token = Totp.current_token_value(base32_secret, secret_format: :base32)
         assert token =~ ~r/\A\d{6}\z/
       end
     end
 
     property "returns a 6 digit numeric string with base64 key" do
-      check all _ <- boolean() do
-        secret = Secrets.generate_totp_secret(format: :base64)
-        token = Totp.current_token_value(secret, secret_format: :base64)
+      check all secret <- binary(length: 20) do
+        base64_secret = Base.encode64(secret)
+        token = Totp.current_token_value(base64_secret, secret_format: :base64)
         assert token =~ ~r/\A\d{6}\z/
       end
     end
