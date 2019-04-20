@@ -71,6 +71,16 @@ defmodule TwoFactorInACan.HotpTest do
         assert token == pot_token
       end
     end
+
+    property "returns a token of the specified length" do
+      check all secret <- binary(length: 20),
+                count <- integer(),
+                token_length <- integer(1..100) do
+
+        token = Hotp.generate_token(secret, count, token_length: token_length)
+        assert String.length(token) == token_length
+      end
+    end
   end
 
   describe "same_secret/4" do

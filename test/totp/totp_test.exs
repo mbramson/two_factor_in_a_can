@@ -71,6 +71,26 @@ defmodule TwoFactorInACan.TotpTest do
       end
     end
 
+    property "returns a token with length specified by the token_length option" do
+      check all secret <- binary(length: 20),
+                token_length <- integer(1..100) do
+        token = Totp.current_token_value(secret, token_length: token_length)
+        assert String.length(token) == token_length
+      end
+
+      check all secret <- binary(length: 20),
+                token_length <- integer(1..100),
+                timestamp <- integer() do
+        token = Totp.current_token_value(
+          secret,
+          token_length: token_length,
+          injected_timestamp: timestamp
+        )
+
+        assert String.length(token) == token_length
+      end
+    end
+
     test "raises an ArgumentError for invalid secret_format" do
       assert_raise ArgumentError, fn ->
         secret = Secrets.generate_totp_secret()
@@ -250,6 +270,29 @@ defmodule TwoFactorInACan.TotpTest do
             interval_seconds: interval_seconds,
             offset_seconds: offset_seconds
           )
+      end
+    end
+
+    property "returns true for matching token of specified token length" do
+      check all secret <- binary(length: 20),
+        interval_seconds <- positive_integer(),
+        offset_seconds <- integer(),
+        token_length <- integer(1..100) do
+
+        token = Totp.current_token_value(
+          secret,
+          token_length: token_length,
+          interval_seconds: interval_seconds,
+          offset_seconds: offset_seconds
+        )
+
+        assert Totp.same_secret?(
+          secret,
+          token,
+          token_length: token_length,
+          interval_seconds: interval_seconds,
+          offset_seconds: offset_seconds
+        )
       end
     end
   end

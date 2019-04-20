@@ -1,3 +1,9 @@
+# 0.1.3
+
+- Add the `bytes` option to `TwoFactorInACan.Secrets.generate_totp_secret/1`
+  allowing custom byte size secrets.
+- Add thorough testing and support for alternate token lengths.
+
 # 0.1.2
 
 - Add the `TwoFactorInACan.Hotp.same_secret?/4` function for verifying HOTP
