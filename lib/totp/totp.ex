@@ -197,7 +197,6 @@ defmodule TwoFactorInACan.Totp do
   ```
   """
   def current_token_value(secret, opts \\ []) do
-    # TODO: Ensure different secret sizes work
     time_interval = time_interval(opts)
     Hotp.generate_token(secret, time_interval, opts)
   end
