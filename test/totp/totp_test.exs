@@ -26,9 +26,8 @@ defmodule TwoFactorInACan.TotpTest do
 
     property "returns the same result as the pot erlang library for specified time intervals" do
       check all secret <- binary(length: 20),
-        interval_seconds <- positive_integer(),
-        injected_timestamp <- integer()
-      do
+                interval_seconds <- positive_integer(),
+                injected_timestamp <- integer() do
         opts = [
           interval_seconds: interval_seconds,
           injected_timestamp: injected_timestamp,
@@ -80,11 +79,12 @@ defmodule TwoFactorInACan.TotpTest do
       check all secret <- binary(length: 20),
                 token_length <- integer(1..100),
                 timestamp <- integer() do
-        token = Totp.current_token_value(
-          secret,
-          token_length: token_length,
-          injected_timestamp: timestamp
-        )
+        token =
+          Totp.current_token_value(
+            secret,
+            token_length: token_length,
+            injected_timestamp: timestamp
+          )
 
         assert String.length(token) == token_length
       end
@@ -110,12 +110,12 @@ defmodule TwoFactorInACan.TotpTest do
                 secret <- binary(length: secret_bytes),
                 token_length <- integer(1..100),
                 timestamp <- integer() do
-
-        token = Totp.current_token_value(
-          secret,
-          token_length: token_length,
-          injected_timestamp: timestamp
-        )
+        token =
+          Totp.current_token_value(
+            secret,
+            token_length: token_length,
+            injected_timestamp: timestamp
+          )
 
         assert String.length(token) == token_length
       end
@@ -154,15 +154,14 @@ defmodule TwoFactorInACan.TotpTest do
 
     property "returns a time interval offset from current one with custom interval" do
       check all offset <- integer(),
-        interval <- positive_integer() do
-
+                interval <- positive_integer() do
         offset_seconds = offset * interval
 
         current_interval =
           Totp.time_interval(
             injected_timestamp: 10_000,
             interval_seconds: interval
-        )
+          )
 
         offset_interval =
           Totp.time_interval(
@@ -177,8 +176,7 @@ defmodule TwoFactorInACan.TotpTest do
 
     property "always returns the same interval as the :pot erlang library" do
       check all interval_seconds <- positive_integer(),
-        injected_timestamp <- integer()
-      do
+                injected_timestamp <- integer() do
         opts = [interval_seconds: interval_seconds, injected_timestamp: injected_timestamp]
         megaseconds = div(injected_timestamp, 1_000_000)
         seconds = rem(injected_timestamp, 1_000_000)
@@ -205,8 +203,7 @@ defmodule TwoFactorInACan.TotpTest do
     # this happening.
     property "returns false if token is generated for 30 seconds in the past" do
       check all secret <- binary(length: 20) do
-        thirty_seconds_ago =
-          (DateTime.utc_now() |> DateTime.to_unix(:second)) - 30
+        thirty_seconds_ago = (DateTime.utc_now() |> DateTime.to_unix(:second)) - 30
 
         thirty_seconds_ago_token =
           Totp.current_token_value(secret, injected_timestamp: thirty_seconds_ago)
@@ -217,112 +214,116 @@ defmodule TwoFactorInACan.TotpTest do
 
     property "returns true for last token using acceptable_past_tokens" do
       check all secret <- binary(length: 20),
-        interval_seconds <- positive_integer(),
-        offset_seconds <- integer() do
+                interval_seconds <- positive_integer(),
+                offset_seconds <- integer() do
+        one_token_ago = -1 * interval_seconds + offset_seconds
 
-          one_token_ago = -1 * interval_seconds + offset_seconds
-          last_token = Totp.current_token_value(
+        last_token =
+          Totp.current_token_value(
             secret,
             offset_seconds: one_token_ago,
             interval_seconds: interval_seconds
           )
 
-          assert Totp.same_secret?(
-            secret,
-            last_token,
-            acceptable_past_tokens: 1,
-            interval_seconds: interval_seconds,
-            offset_seconds: offset_seconds
-          )
+        assert Totp.same_secret?(
+                 secret,
+                 last_token,
+                 acceptable_past_tokens: 1,
+                 interval_seconds: interval_seconds,
+                 offset_seconds: offset_seconds
+               )
       end
     end
 
     property "returns false for token that is outside the acceptable past token range" do
       check all secret <- binary(length: 20),
-        interval_seconds <- positive_integer(),
-        offset_seconds <- integer() do
+                interval_seconds <- positive_integer(),
+                offset_seconds <- integer() do
+        two_tokens_ago = -2 * interval_seconds + offset_seconds
 
-          two_tokens_ago = -2 * interval_seconds + offset_seconds
-          last_token = Totp.current_token_value(
+        last_token =
+          Totp.current_token_value(
             secret,
             offset_seconds: two_tokens_ago,
             interval_seconds: interval_seconds
           )
 
-          refute Totp.same_secret?(
-            secret,
-            last_token,
-            acceptable_past_tokens: 1,
-            interval_seconds: interval_seconds,
-            offset_seconds: offset_seconds
-          )
+        refute Totp.same_secret?(
+                 secret,
+                 last_token,
+                 acceptable_past_tokens: 1,
+                 interval_seconds: interval_seconds,
+                 offset_seconds: offset_seconds
+               )
       end
     end
 
     property "returns true for next token using acceptable_future_tokens" do
       check all secret <- binary(length: 20),
-        interval_seconds <- positive_integer(),
-        offset_seconds <- integer() do
+                interval_seconds <- positive_integer(),
+                offset_seconds <- integer() do
+        one_token_in_future = interval_seconds + offset_seconds
 
-          one_token_in_future = interval_seconds + offset_seconds
-          last_token = Totp.current_token_value(
+        last_token =
+          Totp.current_token_value(
             secret,
             offset_seconds: one_token_in_future,
             interval_seconds: interval_seconds
           )
 
-          assert Totp.same_secret?(
-            secret,
-            last_token,
-            acceptable_future_tokens: 1,
-            interval_seconds: interval_seconds,
-            offset_seconds: offset_seconds
-          )
+        assert Totp.same_secret?(
+                 secret,
+                 last_token,
+                 acceptable_future_tokens: 1,
+                 interval_seconds: interval_seconds,
+                 offset_seconds: offset_seconds
+               )
       end
     end
 
     property "returns false for token that is outside the acceptable future token range" do
       check all secret <- binary(length: 20),
-        interval_seconds <- positive_integer(),
-        offset_seconds <- integer() do
+                interval_seconds <- positive_integer(),
+                offset_seconds <- integer() do
+        two_tokens_in_future = 2 * interval_seconds + offset_seconds
 
-          two_tokens_in_future = 2 * interval_seconds + offset_seconds
-          last_token = Totp.current_token_value(
+        last_token =
+          Totp.current_token_value(
             secret,
             offset_seconds: two_tokens_in_future,
             interval_seconds: interval_seconds
           )
 
-          refute Totp.same_secret?(
-            secret,
-            last_token,
-            acceptable_future_tokens: 1,
-            interval_seconds: interval_seconds,
-            offset_seconds: offset_seconds
-          )
+        refute Totp.same_secret?(
+                 secret,
+                 last_token,
+                 acceptable_future_tokens: 1,
+                 interval_seconds: interval_seconds,
+                 offset_seconds: offset_seconds
+               )
       end
     end
 
     property "returns true for matching token of specified token length" do
       check all secret <- binary(length: 20),
-        interval_seconds <- positive_integer(),
-        offset_seconds <- integer(),
-        token_length <- integer(1..100) do
-
-        token = Totp.current_token_value(
-          secret,
-          token_length: token_length,
-          interval_seconds: interval_seconds,
-          offset_seconds: offset_seconds
-        )
+                interval_seconds <- positive_integer(),
+                offset_seconds <- integer(),
+                token_length <- integer(1..100) do
+        token =
+          Totp.current_token_value(
+            secret,
+            token_length: token_length,
+            interval_seconds: interval_seconds,
+            offset_seconds: offset_seconds
+          )
 
         assert Totp.same_secret?(
-          secret,
-          token,
-          token_length: token_length,
-          interval_seconds: interval_seconds,
-          offset_seconds: offset_seconds
-        )
+                 secret,
+                 token,
+                 token_length: token_length,
+                 interval_seconds: interval_seconds,
+                 offset_seconds: offset_seconds
+               )
       end
     end
   end

@@ -24,8 +24,7 @@ defmodule TwoFactorInACan.HotpTest do
 
     property "raises an ArgumentError if base32 secret cannot be decoded" do
       not_base32_secret = "not_base32"
-      expected_message_regex =
-        ~r/Secret format specified as :base32, but there was an error/
+      expected_message_regex = ~r/Secret format specified as :base32, but there was an error/
 
       assert_raise ArgumentError, expected_message_regex, fn ->
         Hotp.generate_token(not_base32_secret, 0, secret_format: :base32)
@@ -43,8 +42,7 @@ defmodule TwoFactorInACan.HotpTest do
 
     property "raises an ArgumentError if base64 secret cannot be decoded" do
       not_base64_secret = "not_base64"
-      expected_message_regex =
-        ~r/Secret format specified as :base64, but there was an error/
+      expected_message_regex = ~r/Secret format specified as :base64, but there was an error/
 
       assert_raise ArgumentError, expected_message_regex, fn ->
         Hotp.generate_token(not_base64_secret, 0, secret_format: :base64)
@@ -76,7 +74,6 @@ defmodule TwoFactorInACan.HotpTest do
       check all secret <- binary(length: 20),
                 count <- integer(),
                 token_length <- integer(1..100) do
-
         token = Hotp.generate_token(secret, count, token_length: token_length)
         assert String.length(token) == token_length
       end
@@ -87,7 +84,6 @@ defmodule TwoFactorInACan.HotpTest do
     property "returns true for token and count generated with the same secret and count" do
       check all secret <- binary(length: 20),
                 count <- integer() do
-
         token = Hotp.generate_token(secret, count)
         assert Hotp.same_secret?(secret, token, count)
       end
@@ -97,7 +93,6 @@ defmodule TwoFactorInACan.HotpTest do
       check all secret <- binary(length: 20),
                 count <- integer(),
                 token_length <- integer(1..100) do
-
         token = Hotp.generate_token(secret, count, token_length: token_length)
         assert Hotp.same_secret?(secret, token, count, token_length: token_length)
       end
@@ -107,7 +102,6 @@ defmodule TwoFactorInACan.HotpTest do
       check all secret <- binary(length: 20),
                 count <- integer(),
                 token_length <- integer(1..100) do
-
         refute Hotp.same_secret?(secret, -1, count, token_length: token_length)
       end
     end

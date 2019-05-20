@@ -240,7 +240,7 @@ defmodule TwoFactorInACan.Totp do
   6
   ```
   """
-  @spec time_interval([key: :atom]) :: integer()
+  @spec time_interval(key: :atom) :: integer()
   def time_interval(opts \\ []) do
     offset = Keyword.get(opts, :offset_seconds, 0)
     interval_seconds = Keyword.get(opts, :interval_seconds, 30)
@@ -311,8 +311,7 @@ defmodule TwoFactorInACan.Totp do
 
     Enum.any?(time_intervals_to_check, fn offset ->
       this_interval_offset_seconds = offset * interval_seconds + offset_seconds
-      opts_with_offset =
-        Keyword.put(opts, :offset_seconds, this_interval_offset_seconds)
+      opts_with_offset = Keyword.put(opts, :offset_seconds, this_interval_offset_seconds)
 
       token == current_token_value(secret, opts_with_offset)
     end)

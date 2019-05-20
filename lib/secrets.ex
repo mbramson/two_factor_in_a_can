@@ -49,10 +49,17 @@ defmodule TwoFactorInACan.Secrets do
     format = Keyword.get(opts, :format, :binary)
 
     case format do
-      :binary -> secret
-      :base32 -> Base.encode32(secret)
-      :base64 -> Base.encode64(secret)
-      _ -> raise ArgumentError, """
+      :binary ->
+        secret
+
+      :base32 ->
+        Base.encode32(secret)
+
+      :base64 ->
+        Base.encode64(secret)
+
+      _ ->
+        raise ArgumentError, """
         Invalid format supplied when generating secret:
         format: #{format}
 

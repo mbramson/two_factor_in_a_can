@@ -50,9 +50,10 @@ defmodule TwoFactorInACan.Hotp do
 
     four_bytes_from_hash = dynamically_truncate(hash)
 
-    four_bytes_as_integer = four_bytes_from_hash
-                            |> binary_to_integer
-                            |> wrap_to(0x7FFFFFFF)
+    four_bytes_as_integer =
+      four_bytes_from_hash
+      |> binary_to_integer
+      |> wrap_to(0x7FFFFFFF)
 
     truncation_factor = 10 |> :math.pow(token_length) |> trunc
 
