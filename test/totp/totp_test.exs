@@ -90,6 +90,37 @@ defmodule TwoFactorInACan.TotpTest do
       end
     end
 
+    property "returns a 6 digit numeric string for key of any length" do
+      check all secret_bytes <- integer(1..1024),
+                secret <- binary(length: secret_bytes) do
+        token = Totp.current_token_value(secret, secret_format: :binary)
+        assert token =~ ~r/\A\d{6}\z/
+      end
+    end
+
+    property "returns token of correct length for any secret length" do
+      check all secret_bytes <- integer(1..1024),
+                secret <- binary(length: secret_bytes),
+                token_length <- integer(1..100) do
+        token = Totp.current_token_value( secret, token_length: token_length)
+        assert String.length(token) == token_length
+      end
+
+      check all secret_bytes <- integer(1..1024),
+                secret <- binary(length: secret_bytes),
+                token_length <- integer(1..100),
+                timestamp <- integer() do
+
+        token = Totp.current_token_value(
+          secret,
+          token_length: token_length,
+          injected_timestamp: timestamp
+        )
+
+        assert String.length(token) == token_length
+      end
+    end
+
     test "raises an ArgumentError for invalid secret_format" do
       assert_raise ArgumentError, fn ->
         secret = Secrets.generate_totp_secret()

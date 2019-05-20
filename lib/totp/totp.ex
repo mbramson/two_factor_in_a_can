@@ -246,7 +246,8 @@ defmodule TwoFactorInACan.Totp do
     offset = Keyword.get(opts, :offset_seconds, 0)
     interval_seconds = Keyword.get(opts, :interval_seconds, 30)
     seconds_since_epoch = Keyword.get(opts, :injected_timestamp, now()) + offset
-    seconds_since_epoch / interval_seconds |> trunc
+    intervals_since_epoch = seconds_since_epoch / interval_seconds
+    trunc(intervals_since_epoch)
   end
 
   @doc """
