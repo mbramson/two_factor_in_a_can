@@ -1,5 +1,16 @@
 # TwoFactorInACan
 
+[![CircleCI][circle-img]][circle] [![Hex Version][hex-img]][hex] [![Hex Downloads][downloads-img]][downloads] [![License][license-img]][license]
+
+[circle-img]: https://circleci.com/gh/mbramson/two_factor_in_a_can/tree/master.svg?style=svg
+[circle]: https://circleci.com/gh/mbramson/two_factor_in_a_can/tree/master
+[hex-img]: https://img.shields.io/hexpm/v/two_factor_in_a_can.svg
+[hex]: https://hex.pm/packages/two_factor_in_a_can
+[downloads-img]: https://img.shields.io/hexpm/dt/two_factor_in_a_can.svg
+[downloads]: https://hex.pm/packages/two_factor_in_a_can
+[license-img]: https://img.shields.io/badge/license-MIT-blue.svg
+[license]: http://opensource.org/licenses/MIT
+
 `TwoFactorInACan` is a library for adding two factor authentication (2FA) to
 your application. Its goal is to be the most developer friendly way to securely
 setup two factor authentication in the Elixir/Erlang ecosystem. That means that
