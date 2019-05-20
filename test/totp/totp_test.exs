@@ -102,7 +102,7 @@ defmodule TwoFactorInACan.TotpTest do
       check all secret_bytes <- integer(1..1024),
                 secret <- binary(length: secret_bytes),
                 token_length <- integer(1..100) do
-        token = Totp.current_token_value( secret, token_length: token_length)
+        token = Totp.current_token_value(secret, token_length: token_length)
         assert String.length(token) == token_length
       end
 
