@@ -1,3 +1,7 @@
+# 0.1.4
+
+Add compatibility with OTP 24 (but it still works with OTP < 24)
+
 # 0.1.3
 
 - Add the `bytes` option to `TwoFactorInACan.Secrets.generate_totp_secret/1`
