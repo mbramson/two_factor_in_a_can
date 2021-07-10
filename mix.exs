@@ -4,7 +4,7 @@ defmodule TwoFactorInACan.MixProject do
   def project do
     [
       app: :two_factor_in_a_can,
-      version: "0.1.3",
+      version: "0.1.4",
       elixir: "~> 1.4",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
