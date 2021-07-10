@@ -46,7 +46,7 @@ defmodule TwoFactorInACan.Hotp do
 
     binary_secret = secret |> convert_to_binary(opts)
 
-    hash = :crypto.hmac(:sha, binary_secret, count |> as_8_byte_binary)
+    hash = compute_hash(binary_secret, count)
 
     four_bytes_from_hash = dynamically_truncate(hash)
 
@@ -62,6 +62,16 @@ defmodule TwoFactorInACan.Hotp do
     token_as_integer
     |> :erlang.integer_to_binary()
     |> String.pad_leading(token_length, "0")
+  end
+
+  if System.otp_release() |> String.to_integer() >= 23 do
+    defp compute_hash(binary_secret, count) do
+      :crypto.mac(:hmac, :sha, binary_secret, count |> as_8_byte_binary)
+    end
+  else
+    defp compute_hash(binary_secret, count) do
+      :crypto.hmac(:sha, binary_secret, count |> as_8_byte_binary)
+    end
   end
 
   @doc """

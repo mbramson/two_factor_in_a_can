@@ -49,11 +49,11 @@ defmodule TwoFactorInACan.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:credo, "~> 0.10.0", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
       {:ex_doc, "~> 0.20", only: :dev, runtime: false},
       {:mix_test_watch, "~> 0.6", only: :dev, runtime: false},
-      {:pot, "~> 0.9.7", only: :test},
+      {:pot, "~> 1.0", only: :test},
       {:stream_data, "~> 0.1", only: :test},
     ]
   end

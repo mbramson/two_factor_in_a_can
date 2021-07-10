@@ -9,7 +9,7 @@ defmodule TwoFactorInACan.TotpTest do
     property "returns the same result as the pot erlang library" do
       check all secret <- binary(length: 20) do
         returned_token = Totp.current_token_value(secret, secret_format: :binary)
-        base32_secret = :base32.encode(secret)
+        base32_secret = Base.encode32(secret)
         pot_token = :pot.totp(base32_secret)
 
         # Retry it once since the timestamp can drift resulting in a different
@@ -38,7 +38,7 @@ defmodule TwoFactorInACan.TotpTest do
         seconds = rem(injected_timestamp, 1_000_000)
         pot_timestamp = {megaseconds, seconds, 99}
         pot_opts = [interval_length: interval_seconds, timestamp: pot_timestamp]
-        base32_secret = :base32.encode(secret)
+        base32_secret = Base.encode32(secret)
 
         returned_token = Totp.current_token_value(secret, opts)
         pot_token = :pot.totp(base32_secret, pot_opts)
