@@ -21,7 +21,7 @@ dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:two_factor_in_a_can, "~> 0.1.0"}
+    {:two_factor_in_a_can, "~> 0.2.0"}
   ]
 end
 ```

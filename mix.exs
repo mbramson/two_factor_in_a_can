@@ -4,8 +4,8 @@ defmodule TwoFactorInACan.MixProject do
   def project do
     [
       app: :two_factor_in_a_can,
-      version: "0.1.4",
-      elixir: "~> 1.4",
+      version: "0.2.0",
+      elixir: "~> 1.14",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       description: description(),
@@ -14,10 +14,11 @@ defmodule TwoFactorInACan.MixProject do
       name: "TwoFactorInACan",
       source_url: "https://github.com/mbramson/two_factor_in_a_can",
       homepage_url: "http://github.com/mbramson/two_factor_in_a_can",
-      docs: [main: "getting-started",
+      docs: [
+        main: "getting-started",
         extras: [
           "docs/Getting Started.md",
-          "docs/Roadmap.md",
+          "docs/Roadmap.md"
         ]
       ]
     ]
@@ -52,9 +53,9 @@ defmodule TwoFactorInACan.MixProject do
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
       {:ex_doc, "~> 0.20", only: :dev, runtime: false},
-      {:mix_test_watch, "~> 0.6", only: :dev, runtime: false},
+      {:mix_test_watch, "~> 1.2", only: :dev, runtime: false},
       {:pot, "~> 1.0", only: :test},
-      {:stream_data, "~> 0.1", only: :test},
+      {:stream_data, "~> 0.1", only: :test}
     ]
   end
 end

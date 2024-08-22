@@ -6,7 +6,7 @@ defmodule TwoFactorInACan.Hotp do
   For details on RFC 4226, see https://tools.ietf.org/rfc/rfc4226.txt.
   """
 
-  use Bitwise, only_operators: true
+  import Bitwise
 
   @doc """
   Generates a token from a shared secret and a counter which can be

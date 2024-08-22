@@ -1,3 +1,9 @@
+# 0.2.0
+
+Eliminate Bitwise warning in Elixir 1.14 and above.
+
+No longer support Elixir 1.13 and below.
+
 # 0.1.4
 
 Add compatibility with OTP 24 (but it still works with OTP < 24)
